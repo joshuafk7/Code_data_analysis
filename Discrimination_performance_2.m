@@ -42,5 +42,35 @@ cd log
 writetable(b,a(1).name) %write back to excel in log folder
 cd ..
 cd summary
-labels = string(unique(b.Plot_Label));
-plot_discrimination(total_performance,labels) %plotting function, also saves the updated plot in summary folder
+
+%% extract taste names in string array
+
+pattern = ["S","N"]; %tastes in excel file must start with S or N
+
+for j=1:height(b)
+    k=1;
+for i =1:7
+        if startsWith((b.(append('Line_',num2str(i)))(j)),pattern)
+            f(j).excel_tastes(k) = b.(append('Line_',num2str(i)))(j); %grab tastes from excel
+            k=k+1;
+        end
+end
+
+end
+for i=1:length(f)
+f(i).excel_tastes = string(f(i).excel_tastes);
+end
+q=length(f);
+x=2;
+d(1).excel_tastes = f(1).excel_tastes; % this struct contains string arrays with unique tastes
+for i=2:q
+        if ~strcmp(f(i).excel_tastes(1,1), f(i-1).excel_tastes(1,1)) || length(f(i).excel_tastes) ~= length(f(i-1).excel_tastes)
+        d(x).excel_tastes = f(i).excel_tastes;
+        x=x+1;
+
+    end
+
+end
+%% plot 
+labels = string(unique(b.Plot_Label,'stable'));
+plot_discrimination(total_performance,labels,d) %plotting function, also saves the updated plot in summary folder

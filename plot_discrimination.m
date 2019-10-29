@@ -1,8 +1,8 @@
 %% plot total performance for each session
 %different phases of training in different colors
-function plot_discrimination(total_performance,labels)
+function plot_discrimination(total_performance,labels,d)
 
-plotted_data = figure;
+performance_plot = figure;
 b=1;
 a=[];
 j=2;
@@ -10,7 +10,7 @@ j=2;
 for j = 1:length(fieldnames(total_performance))
     a = [b:b+length(total_performance.(append('stage_',num2str(j))))-1];
     b=b+length(total_performance.(append('stage_',num2str(j))));
-    subplot(2,1,1)
+%     subplot(2,1,1)
     scatter(a,vertcat(total_performance.(append('stage_',num2str(j))).total_performance),'filled')
     ylim([0 1]);
     hold on
@@ -18,14 +18,14 @@ end
 % yyaxis right
 
 line([0 b], [0.5 0.5],'LineStyle','--')
-% xlabel('Session #')
+xlabel('Session #')
 ylabel('Performance')
-title(total_performance.stage_1(1).mouseID)
+title({total_performance.stage_1(1).mouseID,'Performance'})
 labels(length(labels)+1) = 'Chance';
 lgd=legend(labels,'Location','southwest','FontSize',8);
 title(lgd,'Suc concentrations used (mM)')
 %% plot bias
-subplot(2,1,2)
+bias_plot = figure;
 b=1;
 a=[];
 bias_all=[];
@@ -36,7 +36,7 @@ for j = 1:length(fieldnames(total_performance))
 end
 scatter(1:b-1,bias_all)
 ylim([-1 1])
-title('Bias')
+title({total_performance.stage_1(1).mouseID,'Bias'})
 xlabel('Session #')
 ylabel('Left Bias         Right Bias')
 
@@ -44,5 +44,21 @@ ylabel('Left Bias         Right Bias')
 nobias = line([0 b], [0 0],'LineStyle','-');
 legend(nobias,'No Bias','Location','southwest')
 
-saveas(plotted_data,'performance_plot')
+%% plot individual tastes
+% each stage is a separate figure
+b=1;
+a=[];
+j=1;
+p=[];
+ii=1;
+for j = 1:length(fieldnames(total_performance))
+%     individual_plot = figure;
+for ii =1:length(d(j).excel_tastes)
+   p =[p total_performance.(append('stage_',num2str(j)))(ii).(append(d(j).excel_tastes(1),'_performance'))];
+end
+c=categorical(d(j).excel_tastes,'Ordinal',0);
+bar(c,p)
+end
+saveas(performance_plot,'performance_plot')
+saveas(bias_plot,'bias_plot')
 end
