@@ -42,4 +42,5 @@ cd log
 writetable(b,a(1).name) %write back to excel in log folder
 cd ..
 cd summary
-plot_discrimination(total_performance) %plotting function, also saves the updated plot in summary folder
+labels = string(unique(b.Plot_Label));
+plot_discrimination(total_performance,labels) %plotting function, also saves the updated plot in summary folder

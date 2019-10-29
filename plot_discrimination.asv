@@ -1,4 +1,8 @@
-figure;
+%% plot total performance for each session
+%different phases of training in different colors
+function plot_discrimination(total_performance,labels)
+
+plotted_data = figure;
 b=1;
 a=[];
 j=2;
@@ -8,10 +12,7 @@ for j = 1:length(fieldnames(total_performance))
     b=b+length(total_performance.(append('stage_',num2str(j))));
     subplot(2,1,1)
     scatter(a,vertcat(total_performance.(append('stage_',num2str(j))).total_performance),'filled')
-    
-    
     ylim([0 1]);
-    
     hold on
 end
 % yyaxis right
@@ -20,7 +21,9 @@ line([0 b], [0.5 0.5],'LineStyle','--')
 % xlabel('Session #')
 ylabel('Performance')
 title(append(total_performance.stage_1(1).mouseID, ' -- Performance'))
-legend('100, 0 (Suc mM)','75,65,35,25','75,65,55,45,35,25','65,35','Chance','Location','southeast');
+labels(length(labels)+1) = 'Chance';
+lgd=legend(labels,'Location','southeast');
+ldg.title('Suc (mM)')
 %% plot bias
 subplot(2,1,2)
 b=1;
@@ -41,8 +44,5 @@ ylabel('Left Bias         Right Bias')
 nobias = line([0 b], [0 0],'LineStyle','-');
 legend(nobias,'No Bias')
 
-test = ["65/35, 35/65"];
-% legend('Suc, NaCl','$\frac{75}{25},\frac{65}{35},\frac{35}{65},\frac{25}{75}$','$\frac{75}{25},\frac{65}{35},\frac{55}{45},\frac{45}{55},\frac{35}{65},\frac{25}{75}$','$\frac{65}{35},\frac{35}{65}$','Chance','Location','SouthEast','interpreter','latex','FontSize',13);
-
-% legend('100, 0 (Suc mM)','75,65,35,25','75,65,55,45,35,25','65,35','Chance','Location','SouthEast');
-
+saveas(plotted_data,'performance_plot')
+end

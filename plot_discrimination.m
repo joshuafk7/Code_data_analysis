@@ -1,6 +1,6 @@
 %% plot total performance for each session
 %different phases of training in different colors
-function plot_discrimination(total_performance)
+function plot_discrimination(total_performance,labels)
 
 plotted_data = figure;
 b=1;
@@ -20,8 +20,10 @@ end
 line([0 b], [0.5 0.5],'LineStyle','--')
 % xlabel('Session #')
 ylabel('Performance')
-title(append(total_performance.stage_1(1).mouseID, ' -- Performance'))
-legend('100, 0 (Suc mM)','75,65,35,25','75,65,55,45,35,25','65,35','Chance','Location','southeast');
+title(total_performance.stage_1(1).mouseID)
+labels(length(labels)+1) = 'Chance';
+lgd=legend(labels,'Location','southwest','FontSize',8);
+title(lgd,'Suc concentrations used (mM)')
 %% plot bias
 subplot(2,1,2)
 b=1;
@@ -40,7 +42,7 @@ ylabel('Left Bias         Right Bias')
 
 
 nobias = line([0 b], [0 0],'LineStyle','-');
-legend(nobias,'No Bias')
+legend(nobias,'No Bias','Location','southwest')
 
 saveas(plotted_data,'performance_plot')
 end
