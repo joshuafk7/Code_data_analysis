@@ -3,7 +3,7 @@
 %data is saved into total performance struct
 %each "stage" is a different part of the behavioral training paradigm, all
 %days of the same type are aggregated into the stages
-function [trial,summary, total_performance] = Discrimination_performance_summary_multiple(filename,excel_tastes,excel_directions)
+function [tastes,trial,summary, total_performance] = Discrimination_performance_summary_multiple(filename,excel_tastes,excel_directions)
 % file = dir('*.rhd');
 A=cd;
 date = str2double(A(34:end));
@@ -33,12 +33,12 @@ if exist('total_performance.mat') == 2
 if ismember(date,existingdates)
     trial = [];
     summary=[];
-   
+   tastes=[];
     return;
 else
     cd ..
     cd(num2str(date))
-   [~,~,~,trial,summary] = process_intan_v3_behavior_only(filename,excel_tastes,excel_directions); 
+   [tastes,~,~,trial,summary] = process_intan_v3_behavior_only(filename,excel_tastes,excel_directions); 
 end
     
 
@@ -56,7 +56,7 @@ end
 else
     cd ..
     cd(num2str(date))
-    [~,~,~,trial,summary] = process_intan_v3_behavior_only(filename,excel_tastes,excel_directions);
+    [tastes,~,~,trial,summary] = process_intan_v3_behavior_only(filename,excel_tastes,excel_directions);
     total_performance.(append('stage_',(num2str(1)))) = summary;
 end
 cd ..
