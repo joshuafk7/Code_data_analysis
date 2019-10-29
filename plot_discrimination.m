@@ -52,18 +52,21 @@ j=1;
 p=[];
 ii=1;
 for j = 1:length(fieldnames(total_performance))
-%     individual_plot = figure;
-for i=1:length(total_performance.(append('stage_',num2str(j))))
+        figure;
+        p=[];
+    for i=1:length(total_performance.(append('stage_',num2str(j))))
+        
+        for ii =1:length(d(j).excel_tastes)
+            p(i,ii) = total_performance.(append('stage_',num2str(j)))(i).(append(d(j).excel_tastes(ii),'_performance'));
+        end
+        c=categorical(d(j).excel_tastes,d(j).excel_tastes);
+        subplot(length(total_performance.(append('stage_',num2str(j)))),1,i) %change this
+        bar(c,p(i,:))
+        title(append('Day ',num2str(i)))
+    end
     
-for ii =1:length(d(j).excel_tastes)
-   p(i,ii) = total_performance.(append('stage_',num2str(j)))(i).(append(d(j).excel_tastes(ii),'_performance'));
 end
-c=categorical(d(j).excel_tastes,d(j).excel_tastes);
-subplot(4,2,i)
-bar(c,p(i,:))
-end
-
-end
+%% save plots
 saveas(performance_plot,'performance_plot')
 saveas(bias_plot,'bias_plot')
 end
