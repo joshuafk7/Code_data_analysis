@@ -27,8 +27,9 @@ neurons = trial2neuron5tastant_Josh(trial,tastes);
 
 
 %% bin the spike data and plot for each taste separately
+close;
 bins = [-5:.5:10]; %bin size
-neuron2plot = 9; %choose your neuron
+neuron2plot = 32; %choose your neuron
 
 figure
 for p=1:length(tastes)

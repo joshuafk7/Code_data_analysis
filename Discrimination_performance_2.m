@@ -5,7 +5,7 @@
 % updates the total performance plot
 
 %it also writes the performance, # of trials, and bias to the excel sheet
-
+clear
 cd log
 a = dir('*.xlsx');
 b=readtable(a(1).name);
@@ -34,6 +34,17 @@ for j =1:length(b.Date)
         b.Bias(j) = summary.bias;
         b.numTrials(j) = length(trial);
     end
+    p=1;
+    for i=1:7
+       if ~isnan((b.(append('Dir_',num2str(i)))(j))) && ~isempty(summary)
+           b.(append('Perf_',num2str(i)))(j) = summary.(append((tastes{p}),'_performance'));
+           p=p+1;
+       end
+    end
+%     if ~isempty(b.indiv_Performance)
+%         b.indiv_Performance = tastes;
+%         
+%     end
     cd ..
     clearvars excel_directions excel_tastes
 end

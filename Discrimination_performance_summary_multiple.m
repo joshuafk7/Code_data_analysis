@@ -6,7 +6,7 @@
 function [tastes,trial,summary, total_performance] = Discrimination_performance_summary_multiple(filename,excel_tastes,excel_directions)
 % file = dir('*.rhd');
 A=cd;
-date = str2double(A(34:end));
+date = str2double(A(end-5:end));
 
 cd ..
 

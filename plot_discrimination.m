@@ -51,6 +51,7 @@ a=[];
 j=1;
 p=[];
 ii=1;
+% colors = ['b','r', 'c','m','g','k','y'];
 for j = 1:length(fieldnames(total_performance))
         iii = figure;
         sgtitle(append('Stage ',num2str(j)));
@@ -63,15 +64,16 @@ for j = 1:length(fieldnames(total_performance))
         c=categorical(d(j).excel_tastes,d(j).excel_tastes);
         subplot(1,length(total_performance.(append('stage_',num2str(j)))),i) %change this
         
-        bar(c,p(i,:));
+        bar(c,p(i,:)); %,colors(j));
+        set(gca,'TickLabelInterpreter','none')
        ylim([0 1]);
       
         title(append('Day ',num2str(i)))
     end
-    saveas(iii,append('Individual_taste_perf_Stage_',num2str(j)))
+    saveas(iii,append('Individual_taste_perf_Stage_',num2str(j),'.png'))
 end
 %% save plots
-saveas(performance_plot,'performance_plot')
-saveas(bias_plot,'bias_plot')
+saveas(performance_plot,'performance_plot.png')
+saveas(bias_plot,'bias_plot.png')
 
 end

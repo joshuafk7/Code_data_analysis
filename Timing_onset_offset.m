@@ -1,4 +1,4 @@
-function [t_on t_off]=Timing_onset_offset(data, timestamps, threshold,spacing,fig)
+function [t_on ,t_off]=Timing_onset_offset(data, timestamps, threshold,spacing,fig)
 %% this scripts is for quick extract the timestamps of the onset and offset of any analog signal
 % INPUT:
 %
@@ -37,7 +37,7 @@ else
         for i=1:length(a)
             onset(i+1)=loc(a(i));
         end
-        b=find(l>30);
+        b=find(l>spacing);
         % clear offset
         for i=1:length(b)
             offset(i)=loc(b(i));

@@ -67,7 +67,7 @@ end
 % end
     
 %% Frames adjusted takes into account downsampling of video
-data.Frames_adjusted = data.Frames(1,1:2:end);
+data.Frames_adjusted = data.Frames(1,1:end);
 data.Frames = [];
 %% this section extracts first lick of each trial for alignment purposes
 %it also means that trials without central sp licks are not extracted
@@ -165,7 +165,7 @@ trial(length(trial)) = [];
 
 %% make number of frames and frame index uniform for all trials (this required deleting one frame from approx half trials
 
-find(min(length(trial.Frames_adjusted)))
+% find(min(length(trial.Frames_adjusted)))
 %% list trials with no lateral licks 
 
 j=1;

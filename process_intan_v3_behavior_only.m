@@ -1,14 +1,16 @@
 %% process data recorded from Intan board
 function [tastes,unit, data,trial, summary] = process_intan_v3_behavior_only(filename,excel_tastes,excel_directions)
 % filename = 'D:\Behavior\Discrimination\JK062\190914\JK062_190914_161300.rhd';
-% file = dir('*.rhd');
-dataRaw = read_Intan(filename);
+file = dir('*.rhd');
+dataRaw = read_Intan(file.name);
 % data = read_intan_batch;
 %% extract the event data
 thr = .5;
 [data.centSp(1,:),data.centSp(2,:)] = Timing_onset_offset(dataRaw.analog(1,:), dataRaw.ts, thr,30,0); % get the central licks
 [data.LeftSp(1,:),data.LeftSp(2,:)] = Timing_onset_offset(dataRaw.analog(2,:), dataRaw.ts, thr,30,0);
 [data.RightSp(1,:),data.RightSp(2,:)] = Timing_onset_offset(dataRaw.analog(3,:), dataRaw.ts, thr,30,0);
+[data.beh_frames(1,:),data.beh_frames(2,:)] = Timing_onset_offset(dataRaw.analog(4,:), dataRaw.ts, thr,20,0);
+
 % [data.Forward,~]              = Timing_onset_offset(dataRaw.event(10,:), dataRaw.ts, 0.5,3000,0);
 % [data.Backward,~]              = Timing_onset_offset(dataRaw.event(11,:), dataRaw.ts, 0.5,30,0);
 % [data.Up,~]                        = Timing_onset_offset(dataRaw.event(12,:), dataRaw.ts, 0.5,30,0);
@@ -17,8 +19,8 @@ thr = .5;
 %%
 %% events
 A = cd;
-summary.mouseID  = A(28:32);
-summary.date     = A(34:end);
+summary.mouseID  = A(end-11:end-7);
+summary.date     = A(end-5:end);
 clear A;
 % %%
 % [data.T_1(1,:),data.T_1_off(2,:)]     = Timing_onset_offset(dataRaw.event(1,:), dataRaw.ts, 0.5,30,0);
@@ -35,9 +37,9 @@ for i = 1:7
     end
 end
 
-[data.R_1(1,:), data.R_1(2,:)]            = Timing_onset_offset(dataRaw.event(8,:), dataRaw.ts, 0.5,100,0);
+[data.R_1(1,:), data.R_1(2,:)]            = Timing_onset_offset(dataRaw.event(8,:), dataRaw.ts, 0.5,30,0);
 
-[data.L_1(1,:), data.L_1(2,:)]            = Timing_onset_offset(dataRaw.event(9,:), dataRaw.ts, 0.5,100,0);   
+[data.L_1(1,:), data.L_1(2,:)]            = Timing_onset_offset(dataRaw.event(9,:), dataRaw.ts, 0.5,30,0);   
 
 %% remove NI errors
 names = fieldnames(data);
