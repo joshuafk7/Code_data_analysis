@@ -15,7 +15,7 @@ b = [1 1 1 2 2 2];
 
 
 
-%% extract traces and spikes based on index of frames in C from CNMF   
+%% extract traces and spikes to trial structurebased on index of frames in C from CNMF   
 for i =1:length(trial)
     trial(i).traces = neuron.C(:,trial(i).Imaging_Frame_index);
     trial(i).spikes = full(neuron.S(:,trial(i).Imaging_Frame_index));
@@ -112,7 +112,7 @@ size(intersect(a,z))
     end
 a=find(pval1 <0.05);
 larger = find(nanmean(binnedC2(:,7,a))<nanmean(binnedC2(:,11,a)));
-a = a(larger)
+a = a(larger); %only choose excitatory responses
 % b=find(pval2 <0.05);
 for j=1:length(a)
     subplot(5,6,j) %plot all of the taste responsive neurons

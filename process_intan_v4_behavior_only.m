@@ -1,4 +1,13 @@
 %% process data recorded from Intan board
+%input variables
+    %filename - the .rhd file output from the intan, one recorded for each
+    %behavioral session
+    %excel_tastes - tastes in each line example {'Suc', 'S_75_25','S_55_45','S_45_55','S_25_75','NaCl'}
+    %excel_directions - correct direction for each line, 1 left, 2 right,
+    % example [1 1 1 2 2 2]
+%output
+    %all other outputs are saved in the summary variable but you can also output
+    %things individually if you want
 function [tastes,unit, data,trial, summary] = process_intan_v4_behavior_only(filename,excel_tastes,excel_directions)
 % filename = 'D:\Behavior\Discrimination\JK062\190914\JK062_190914_161300.rhd';
 file = dir('*.rhd');
