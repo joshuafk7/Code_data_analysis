@@ -6,8 +6,7 @@
 clear;
 gcp;
 %% download data and convert to single precision
-cd D:\Behavior\Discrimination\Imaging\JK061\190916\cropped
-name = 'JK061_2019-09-16_cropped.avi';
+name = 'msCam13.avi';
 if ~exist(name,'file')  % download file if it doesn't exist in the directory
     url = 'https://caiman.flatironinstitute.org/~neuro/normcorre_datasets/msCam13.avi';
     fprintf('downloading the file...');
@@ -59,28 +58,28 @@ tic; Mr = apply_shifts(Yf,shifts1,options_r,bound/2,bound/2); toc % apply shifts
 [cM1f,mM1f,vM1f] = motion_metrics(Mr,options_r.max_shift);
 
 %% plot rigid shifts and metrics
-% shifts_r = squeeze(cat(3,shifts1(:).shifts));
-% figure;
-%     subplot(311); plot(shifts_r);
-%         title('Rigid shifts','fontsize',14,'fontweight','bold');
-%         legend('y-shifts','x-shifts');
-%     subplot(312); plot(1:T,cY,1:T,cM1);
-%         title('Correlation coefficients on filtered movie','fontsize',14,'fontweight','bold');
-%         legend('raw','rigid');
-%     subplot(313); plot(1:T,cYf,1:T,cM1f);
-%         title('Correlation coefficients on full movie','fontsize',14,'fontweight','bold');
-%         legend('raw','rigid');
+shifts_r = squeeze(cat(3,shifts1(:).shifts));
+figure;
+    subplot(311); plot(shifts_r);
+        title('Rigid shifts','fontsize',14,'fontweight','bold');
+        legend('y-shifts','x-shifts');
+    subplot(312); plot(1:T,cY,1:T,cM1);
+        title('Correlation coefficients on filtered movie','fontsize',14,'fontweight','bold');
+        legend('raw','rigid');
+    subplot(313); plot(1:T,cYf,1:T,cM1f);
+        title('Correlation coefficients on full movie','fontsize',14,'fontweight','bold');
+        legend('raw','rigid');
 
 %% now apply non-rigid motion correction
 % non-rigid motion correction is likely to produce very similar results
-% % since there is no raster scanning effect in wide field imaging
-% 
-% options_nr = NoRMCorreSetParms('d1',d1-bound,'d2',d2-bound,'bin_width',50, ...
-%     'grid_size',[128,128]*2,'mot_uf',4,'correct_bidir',false, ...
-%     'overlap_pre',32,'overlap_post',32,'max_shift',20);
-% 
-% tic; [M2,shifts2,template2] = normcorre_batch(Y(bound/2+1:end-bound/2,bound/2+1:end-bound/2,:),options_nr,template1); toc % register filtered data
-% tic; Mpr = apply_shifts(Yf,shifts2,options_nr,bound/2,bound/2); toc % apply the shifts to the removed percentile
+% since there is no raster scanning effect in wide field imaging
+
+options_nr = NoRMCorreSetParms('d1',d1-bound,'d2',d2-bound,'bin_width',50, ...
+    'grid_size',[128,128]*2,'mot_uf',4,'correct_bidir',false, ...
+    'overlap_pre',32,'overlap_post',32,'max_shift',20);
+
+tic; [M2,shifts2,template2] = normcorre_batch(Y(bound/2+1:end-bound/2,bound/2+1:end-bound/2,:),options_nr,template1); toc % register filtered data
+tic; Mpr = apply_shifts(Yf,shifts2,options_nr,bound/2,bound/2); toc % apply the shifts to the removed percentile
 
 %% compute metrics
 
@@ -136,38 +135,38 @@ fig = figure;
     set(gcf, 'PaperUnits', 'points', 'Units', 'points');
     set(gcf, 'Position', round([100 100 fac*3*d2 fac*d1]));
 
-% for t = 1:1:size(Y_ds,3)
-%     if (0)
-%         % plot filtered data
-%         subplot(131);imagesc(Y_ds(:,:,t),[nnY_ds,mmY_ds]); xlabel('Raw data (downsampled)','fontsize',14,'fontweight','bold'); axis equal; axis tight;
-%         colormap('bone');
-%         set(gca,'XTick',[],'YTick',[]);
-%         subplot(132);imagesc(M1_ds(:,:,t),[nnY_ds,mmY_ds]); xlabel('rigid corrected','fontsize',14,'fontweight','bold'); axis equal; axis tight;
-%         title(sprintf('Frame %i out of %i',t,size(Y_ds,3)),'fontweight','bold','fontsize',14); 
-%         colormap('bone')
-%         set(gca,'XTick',[],'YTick',[]);
-%         subplot(133);imagesc(M2_ds(:,:,t),[nnY_ds,mmY_ds]); xlabel('non-rigid corrected','fontsize',14,'fontweight','bold'); axis equal; axis tight;
-%         colormap('bone')
-%         set(gca,'XTick',[],'YTick',[]);
-%     else
-%         % plot full data
-%         subplot(131);imagesc(Yf_ds(:,:,t),[nnYf_ds,mmYf_ds]); xlabel('Raw data (downsampled)','fontsize',14,'fontweight','bold'); axis equal; axis tight;
-%         colormap('bone');
-%         set(gca,'XTick',[],'YTick',[]);
-%         subplot(132);imagesc(M1f_ds(:,:,t),[nnYf_ds,mmYf_ds]); xlabel('rigid corrected','fontsize',14,'fontweight','bold'); axis equal; axis tight;
-%         title(sprintf('Frame %i out of %i',t,size(Y_ds,3)),'fontweight','bold','fontsize',14); 
-%         colormap('bone')
-%         set(gca,'XTick',[],'YTick',[]);
-%         subplot(133);imagesc(M2f_ds(:,:,t),[nnYf_ds,mmYf_ds]); xlabel('non-rigid corrected','fontsize',14,'fontweight','bold'); axis equal; axis tight;
-%         colormap('bone')
-%         set(gca,'XTick',[],'YTick',[]);
-%     end
-%     drawnow;
-%     if make_avi  
-%         currFrame = getframe(fig);
-%         writeVideo(vidObj,currFrame);    
-%     end
-% end
-% if make_avi
-%     close(vidObj);
-% end
+for t = 1:1:size(Y_ds,3)
+    if (0)
+        % plot filtered data
+        subplot(131);imagesc(Y_ds(:,:,t),[nnY_ds,mmY_ds]); xlabel('Raw data (downsampled)','fontsize',14,'fontweight','bold'); axis equal; axis tight;
+        colormap('bone');
+        set(gca,'XTick',[],'YTick',[]);
+        subplot(132);imagesc(M1_ds(:,:,t),[nnY_ds,mmY_ds]); xlabel('rigid corrected','fontsize',14,'fontweight','bold'); axis equal; axis tight;
+        title(sprintf('Frame %i out of %i',t,size(Y_ds,3)),'fontweight','bold','fontsize',14); 
+        colormap('bone')
+        set(gca,'XTick',[],'YTick',[]);
+        subplot(133);imagesc(M2_ds(:,:,t),[nnY_ds,mmY_ds]); xlabel('non-rigid corrected','fontsize',14,'fontweight','bold'); axis equal; axis tight;
+        colormap('bone')
+        set(gca,'XTick',[],'YTick',[]);
+    else
+        % plot full data
+        subplot(131);imagesc(Yf_ds(:,:,t),[nnYf_ds,mmYf_ds]); xlabel('Raw data (downsampled)','fontsize',14,'fontweight','bold'); axis equal; axis tight;
+        colormap('bone');
+        set(gca,'XTick',[],'YTick',[]);
+        subplot(132);imagesc(M1f_ds(:,:,t),[nnYf_ds,mmYf_ds]); xlabel('rigid corrected','fontsize',14,'fontweight','bold'); axis equal; axis tight;
+        title(sprintf('Frame %i out of %i',t,size(Y_ds,3)),'fontweight','bold','fontsize',14); 
+        colormap('bone')
+        set(gca,'XTick',[],'YTick',[]);
+        subplot(133);imagesc(M2f_ds(:,:,t),[nnYf_ds,mmYf_ds]); xlabel('non-rigid corrected','fontsize',14,'fontweight','bold'); axis equal; axis tight;
+        colormap('bone')
+        set(gca,'XTick',[],'YTick',[]);
+    end
+    drawnow;
+    if make_avi  
+        currFrame = getframe(fig);
+        writeVideo(vidObj,currFrame);    
+    end
+end
+if make_avi
+    close(vidObj);
+end

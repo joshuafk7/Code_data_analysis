@@ -12,6 +12,7 @@ b=readtable(a(1).name);
 cd ..
 for j =1:length(b.Date)
     c = num2str(b.Date(j));
+    if exist(c) == 7
     cd(c);
     k=1;
     p=1;
@@ -47,6 +48,8 @@ for j =1:length(b.Date)
 %     end
     cd ..
     clearvars excel_directions excel_tastes
+    end
+    
 end
 
 cd log

@@ -11,7 +11,7 @@ for n = 1:size(trial(1).traces,1)
                 
                 neuron(n).(tastes{q}).spikes{h(q),1}= trial(i).spikes(n,:); %grab spike values for each trial for that neuron
                 neuron(n).(tastes{q}).traces{h(q),1}= trial(i).traces(n,:); %grab trace values for each trial for that neuron
-                neuron(n).(tastes{q}).Frames{h(q),1}=trial(i).Frames_adjusted; %grab frames aka timestamps for each frame above
+                neuron(n).(tastes{q}).Frames{h(q),1}=trial(i).imaging_frames; %grab frames aka timestamps for each frame above
                 neuron(n).(tastes{q}).centSp{h(q),1} = trial(i).centSp; %cent sp licks
                 neuron(n).(tastes{q}).LeftSp{h(q),1} = trial(i).LeftSp; %right sp licks
                 neuron(n).(tastes{q}).RightSp{h(q),1} = trial(i).RightSp; %left sp licks

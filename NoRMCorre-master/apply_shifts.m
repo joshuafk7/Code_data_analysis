@@ -55,6 +55,7 @@ if isa(Y,'char')
         v = VideoReader(Y);
         T = v.Duration*v.FrameRate;
         sizY = [v.Height,v.Width,T];
+        sizY = single(sizY); %added by Josh
         data_type = class(readFrame(v));
     end    
 elseif isobject(Y)

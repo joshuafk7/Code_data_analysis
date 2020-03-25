@@ -6,12 +6,7 @@
 clear;
 gcp;
 %% read data and convert to double
-
-cd D:\Behavior\Discrimination\Imaging\JK062\190925\cropped2
-name = 'JK062.tif';
-
-% A = VideoReader(name);
-% B = rgb2gray(A);
+name = 'msCam13.avi';
 if ~exist(name,'file')  % download file if it doesn't exist in the directory
     url = 'https://caiman.flatironinstitute.org/~neuro/normcorre_datasets/msCam13.avi';
     fprintf('downloading the file...');
@@ -61,7 +56,7 @@ tic; [M1,shifts1,template1] = normcorre_batch(h5_name,options_r); toc % register
 % or options_r.h5_filename accordingly.
 
 tic; Mr = apply_shifts(name,shifts1,options_r); toc % apply shifts to full dataset
-saveastiff(Mr, 'JK063_MC.tif')    
+    
 % you can only save the motion corrected file directly in memory by
 % setting options_r.output_type = 'tiff' or 'h5' and selecting an
 % appropriate name through options_r.tiff_filename or options_r.h5_filename

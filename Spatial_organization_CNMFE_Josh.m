@@ -15,7 +15,7 @@ for i=1:length(A(1,1,:))
     center(i,3) = i;
     ai=[];
 end
-% Coor = neuron.show_contours(0.8); 
+Coor = neuron_new2.show_contours(0.8); 
 hold on;
 scatter(center(:,1), center(:,2),'filled');
  text(center(:,1)+.5, center(:,2)+.5, num2str(center(:,3)),'fontsize',9);
@@ -26,17 +26,29 @@ scatter(center(:,1), center(:,2),'filled');
  distmatrix = squareform(B);
  
  %% find correlations between neuron pairs using spike variable
- correlationmatrix = zeros(length(neuron.S(:,1)),length(neuron.S(:,1)));
- for i =1:length(neuron.S(:,1))
-     for j =1:length(neuron.S(:,1))
-        spikes1=find(neuron.S(i,:));
-        a=length(spikes1);
-        spikes2=find(neuron.S(j,:));
-        overlap = intersect(spikes1,spikes2);
-        c=length(overlap);
-        correlationmatrix(i,j) = c/a;
-     end
+%  correlationmatrix = zeros(length(neuron.S(:,1)),length(neuron.S(:,1)));
+%  for i =1:length(neuron.S(:,1))
+%      for j =1:length(neuron.S(:,1))
+%         spikes1=find(neuron.S(i,:));
+%         a=length(spikes1);
+%         spikes2=find(neuron.S(j,:));
+%         overlap = intersect(spikes1,spikes2);
+%         c=length(overlap);
+%         correlationmatrix(i,j) = c/a;
+%      end
+%  end
+for i = 1:length(neuron.S(:,1))
+     temp = [];
+     z = mod(length(neuron.S(i,:)),4);
+     temp = neuron.S(i,:);
+     temp(end-z+1:end) = [];
+     temp = full(reshape(temp,[],4));
+     temp1(:,i) = sum(temp,2);
+     
  end
+%  temp2 = temp1(:,a);
+ correlationmatrix = corr(temp1);
+ 
  
  %% make a list with distances and correlations
  %sortedD contains distance, correlation and neurons sorted by correlation

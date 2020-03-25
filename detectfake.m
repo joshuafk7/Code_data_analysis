@@ -27,3 +27,5 @@ neuron_temp.S(fakeneuron,:) =[];
 neuron_temp.ids(fakeneuron) =[];
 neuron_temp.tags(fakeneuron) =[];
 neuron_new = neuron_temp;
+
+end

@@ -42,7 +42,8 @@ else
         for i=1:length(b)
             offset(i)=loc(b(i));
         end
-        offset(end+1)=loc(end);
+         offset(end+1)=loc(end);
+        
     end
     if fig ==1
         figure

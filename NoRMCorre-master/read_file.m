@@ -54,8 +54,10 @@ elseif strcmpi(ext,'.avi')
     else
         if nargin < 3
             num2read = v.Duration*v.FrameRate-sframe+1;
+            num2read = single(num2read); % changed by josh 2/17/2020
         end
         num2read = min(num2read,v.Duration*v.FrameRate-sframe+1);
+        num2read = single(num2read); % changed by josh 2/17/2020
 %         Y1 = readFrame(v); changed by josh 9/20/2019
         Y1_temp = readFrame(v);
         if size(Y1_temp,3)==3 % this is a rgb video;

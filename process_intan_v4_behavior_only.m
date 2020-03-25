@@ -1,5 +1,5 @@
 %% process data recorded from Intan board
-function [tastes,unit, data,trial, summary] = process_intan_v3_behavior_only(filename,excel_tastes,excel_directions)
+function [tastes,unit, data,trial, summary] = process_intan_v4_behavior_only(filename,excel_tastes,excel_directions)
 % filename = 'D:\Behavior\Discrimination\JK062\190914\JK062_190914_161300.rhd';
 file = dir('*.rhd');
 dataRaw = read_Intan(file.name);
@@ -19,7 +19,8 @@ thr = .5;
 %%
 %% events
 A = cd;
-summary.mouseID  = A(end-11:end-7);
+B=file.name;
+summary.mouseID  = B(1:5);
 summary.date     = A(end-5:end);
 clear A;
 % %%
@@ -40,6 +41,7 @@ end
 [data.R_1(1,:), data.R_1(2,:)]            = Timing_onset_offset(dataRaw.event(8,:), dataRaw.ts, 0.5,30,0);
 
 [data.L_1(1,:), data.L_1(2,:)]            = Timing_onset_offset(dataRaw.event(9,:), dataRaw.ts, 0.5,30,0);   
+[data.imaging_frames(1,:), data.imaging_frames(2,:)]            = Timing_onset_offset(dataRaw.event(14,:), dataRaw.ts, 0.5,30,0);   
 
 %% remove NI errors
 names = fieldnames(data);
@@ -109,8 +111,10 @@ start=-4000; %how long before event to start trial
 finish =6000; %how long after event to start trial
 
 
-for i =1:length(data_signals)   
+for i =1:length(data_signals)
+    if ~isempty(data.(data_signals{i}))
     unit.(data_signals{i}) = spike2eventRasteandPSTH_NP_Josh(data.(data_signals{i}),data.firstLick,100,start,finish);
+    end
 end
 %% Reorganize in trial structure
 idx=1;
@@ -131,8 +135,11 @@ for i = 1:length(data.firstLick)
                 trial(idx).TasteID = tastes{a}; %extract taste ID for each trial
             end
         end
-         for b = 1:length(tastes)
-            trial(idx).Frame_index = unit.beh_frames.spikeraster(i).index; %extrac frame index for alignment with imaging
+        for b = 1:length(tastes)
+            trial(idx).Beh_Frame_index = unit.beh_frames.spikeraster(i).index; %extrac frame index for alignment with imaging
+            if unit.imaging_frames.Spike~=0
+                trial(idx).Imaging_Frame_index = unit.imaging_frames.spikeraster(i).index; %extrac frame index for alignment with imaging
+            end
         end
         idx=idx+1;
 %     end
@@ -250,6 +257,7 @@ for i =1:length(trial)
     if trial(i).L_R_trial == 2
         Rcount = Rcount+1;
     end
+    trial(i).bias = Lerror/Lcount - Rerror/Rcount;
 end
 summary.bias = Lerror/Lcount - Rerror/Rcount;
     
@@ -257,6 +265,7 @@ summary.bias = Lerror/Lcount - Rerror/Rcount;
 %% summary performance for each taste
 T_correct = zeros(1,length(tastes));
 T_count = zeros(1,length(tastes));
+t_performance = zeros(1,length(tastes));
 for j=1:length(tastes)
     for i =1:length(trial)
         if convertCharsToStrings(trial(i).TasteID) == tastes{j}
@@ -267,17 +276,24 @@ for j=1:length(tastes)
         end   
     end
 end
-for j=1:length(tastes)
-    summary.(append((tastes{j}),'_performance')) = T_correct(j)/T_count(j);
-end
-
+% for j=1:length(tastes)
+%     summary.(append((tastes{j}),'_performance')) = T_correct(j)/T_count(j);
+% end
+t_performance = T_correct./T_count;
+summary.ind_performance = t_performance;
 
 
 %% summary total performance
+%all outputs of this function are also saved in the summary struct
 summary.total_performance = trial(length(trial)).total_performance;
+summary.numTrials = length(trial);
+summary.tastes = tastes;
+summary.directions = excel_directions;
+summary.trial = trial;
+summary.unit = unit;
+summary.data = data;
 summary.problemTrial = problemTrial;
 summary.lateralmiss = lateralmiss;
 summary.noTasteID = noTasteID;
-summary.numTrials = length(trial);
     
 end

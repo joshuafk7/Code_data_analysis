@@ -51,12 +51,12 @@ end
 bins = -4:.5:6; %bin size
 z=1;
 p=1;
-binnedC2 = NaN(length(trial),length(bins)-1,length(neurons));
+binnedC2 = NaN(length(trial),length(bins),length(neurons));
 for z = 1:length(neurons)
     x=1;
     for p=1:length(tastes)
         for i=1:length(neurons(z).(tastes{p}).spikes)
-            for j=1:length(bins)-1
+            for j=1:length(bins)
                 idx= find(neurons(z).(tastes{p}).Frames{i,1} > bins(j) & neurons(z).(tastes{p}).Frames{i,1} < bins(j+1));
 %                 r = cell2mat(neurons(z).(tastes{p}).L_R_trial(1,1));
                 binnedC2(x,j,z) = sum(neurons(z).(tastes{p}).spikes{i,1}(1,idx)); 
@@ -116,7 +116,7 @@ a = a(larger)
 % b=find(pval2 <0.05);
 for j=1:length(a)
     subplot(5,6,j) %plot all of the taste responsive neurons
-    plot(bins(1:end-1),nanmean(binnedC2(:,:,a(j))))
+    plot(bins,nanmean(binnedC2(:,:,a(j))))
     y=ylim;
     line([0 0],[0 y(2)],'Color','r','LineStyle','--')
     title(append('Neuron ',num2str(a(j))))
