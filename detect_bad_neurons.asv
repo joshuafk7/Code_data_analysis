@@ -21,7 +21,7 @@ for i =1 :length(neuron.C_raw(:,1))
 end
 Bb(3,:)= Bb(2,:)-Bb(1,:);
 histogram(Bb(3,:))
-Z = find(Bb(3,:)>.1);
+Z = find(Bb(3,:)>.05);
 %%
 fakeneuron = find(q);
 neuron_temp = neuron;
@@ -32,19 +32,19 @@ neuron_temp.S(fakeneuron,:) =[];
 neuron_temp.ids(fakeneuron) =[];
 neuron_temp.tags(fakeneuron) =[];
 neuron_new = neuron_temp;
-%%
-for i =1:length(neuron.C_raw(:,1)) %calculate correlation between C and C_raw
-R=corrcoef(neuron.C(i,:), neuron.C_raw(i,:));
+
+for i =1:length(neuron_new.C_raw(:,1)) %calculate correlation between C and C_raw
+R=corrcoef(neuron_new.C(i,:), neuron_new.C_raw(i,:));
 cor(i) = R(2,1);
 end
 %%
 r=[];
 r = find(cor<.8); %find cells with correlation greater than .9
 %%
-neuron2plot = 335;
-plot(neuron.C_raw(neuron2plot,:))%,'color','g')
+neuron2plot = 17;
+plot(neuron_new.C_raw(neuron2plot,:))%,'color','g')
 hold on
-plot(neuron.C(neuron2plot,:))
+plot(neuron_new.C(neuron2plot,:))
 %%
 fakeneuron=[];
 fakeneuron = r;

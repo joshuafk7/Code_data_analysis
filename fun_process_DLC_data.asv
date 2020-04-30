@@ -1,4 +1,6 @@
-a = dir('*.csv');
+function [summary_w_DLC, DLC_data] = fun_process_DLC_data(plotting, DLC_csv, summary)
+
+a = DLC_csv;
 coords=readtable(a(1).name);
 %euclidean distance for jaw movement between t and t-1
 eucdist = sqrt((coords.jaw_x(2:end) - coords.jaw_x(1:end-1)).^2 + (coords.jaw_y(2:end) - coords.jaw_y(end-1)).^2);
@@ -10,35 +12,15 @@ eucdist = eucdist';
 % % d=[ 1 2];
 % file = dir('*.rhd');
 % [~,~,~,~, summary] = process_intan_v4_behavior_only(file.name,c,d);
-%% smooth data
-windowSize = 5; 
-b = (1/windowSize)*ones(1,windowSize);
-a = 1;
-distsmooth = filter(b,a,eucdist);
 
-hold on;
-plot(eucdist(1:5000));
-plot(distsmooth(1:5000));
 %% align jaw movments with trial structure
 for i =1:length(summary.trial)
     if ~isempty(summary.trial(i).Beh_Frame_index)
     summary.trial(i).jaw_movement = eucdist(summary.trial(i).Beh_Frame_index(1,:));
     end
 end
-figure
-plot(summary.trial(50).beh_frames,summary.trial(50).jaw_movement)
 
 
-%% jaw movement no binning
-p=1;
-for i =1:length(trial)
-     if length(trial(i).Frame_index)>495
-   e(p,:) = trial(i).jaw_movement(1,1:497);
-   p=p+1;
-   
-     end
-end
-q=mean(e);
 %% binned jaw movement
 p=1;
 bins = -4:.2:6;
@@ -46,9 +28,7 @@ bins = -4:.2:6;
 for i=1:length(summary.trial)
     if length(summary.trial(i).Beh_Frame_index)>496
         for j =1:length(bins)-1
-            
             binned_data(p,j) = mean(summary.trial(i).jaw_movement(find(summary.trial(i).beh_frames > bins(j) & summary.trial(i).beh_frames < bins(j+1))));
-            
         end
     p=p+1;    
     end
@@ -58,6 +38,11 @@ x=round(length(summary.trial)/2);
 z(1,:) = mean(binned_data(1:x,:)); %mean distance for each bin across all trials
 z(2,:) = mean(binned_data(x:end,:));
 z(3,:) = mean(binned_data(:,:));
+%%
+
+
+
+%%
 figure
 subplot(3,1,1)
 plot(bins(1:end-1),z(1,:))
@@ -69,18 +54,7 @@ title(append(summary.mouseID,' - Jaw Movement Averaged Across Trials'))
 ylabel('Distance between t and t-1')
 xlabel('Trial time aligned to first lick (sec)')
 legend('first half','second half','all trials')
-%% plot subset of trials on same graph
-figure
 
-
-for i=10:15 %which trials you want
-    
-      if ~isempty(trial(i).Frame_index)
-    plot(trial(i).beh_frames,trial(i).jaw_movement)
-    hold on
-    
-      end
-end
 %% plot jaw movement along with lick raster from lick detection
 subplot(2,1,1)
 plot(bins(1:end-1),z)
@@ -256,4 +230,4 @@ xlim([-4 6]);
 ylim([0 length(summary.trial)]);
 suptitle(append(summary.mouseID))
 
-
+end

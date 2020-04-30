@@ -101,17 +101,14 @@ ylabel('|Average Correlation|')
 Q = neuron.C(choice_resp_neurons,:);
 QQ = linkage(Q,'Ward');
 % QQQ = cluster(QQ, 'Cutoff', 3, 'Depth',5);
-QQQ = cluster(QQ, 'MaxClust', 6);
-figure
+QQQ = cluster(QQ, 'MaxClust', 5);
 dendrogram(QQ)
-title('Hierarchical Clustering of choice responsive neurons')
+title('Hierarchical Clustering of delay responsive neurons')
 neuron_number = 1:length(neurons);
 clust1_neurons = choice_resp_neurons(find(QQQ == 1));
 clust2_neurons = choice_resp_neurons(find(QQQ == 2));
 clust3_neurons = choice_resp_neurons(find(QQQ == 3));
 clust4_neurons = choice_resp_neurons(find(QQQ == 4));
-clust5_neurons = choice_resp_neurons(find(QQQ == 5));
-clust6_neurons = choice_resp_neurons(find(QQQ == 6));
 % clust4_neurons = neuron_number(find(QQQ == 4));
 % clust5_neurons = neuron_number(find(QQQ == 5));
 t = categorical({'Suc','S\_75\_25','S\_55\_45','S\_45\_55','S\_25\_75','NaCl'});
@@ -121,13 +118,13 @@ figure
 hold on
 plot(plotbins(1:end-1),nanmean(plotbinnedC2(:,:,clust1_neurons), [1 3]))
 plot(plotbins(1:end-1),nanmean(plotbinnedC2(:,:,clust2_neurons), [1 3]))
+plot(plotbins(1:end-1),nanmean(plotbinnedC2(:,:,clust3_neurons), [1 3]))
 plot(plotbins(1:end-1),nanmean(plotbinnedC2(:,:,clust4_neurons), [1 3]))
-plot(plotbins(1:end-1),nanmean(plotbinnedC2(:,:,clust5_neurons), [1 3]))
 
 y=ylim;
 line([0 0], [0 y(2)],'LineStyle','--','Color','r');
 rectangle('Position',[4 0 2 y(2)],'EdgeColor', 'none', 'FaceColor', [.8, .8, .8, 0.5])
-legend('Cluster 1','Cluster 2','Cluster 4','Cluster 5','Location','Northwest')
+legend('Cluster 1','Cluster 2','Cluster 3','Cluster 4','Location','Northwest')
 xlabel('Time (sec)')
 ylabel('Inferred Spiking (AU)')
 title('Population Averages - Choice Neurons')
@@ -135,7 +132,7 @@ title('Population Averages - Choice Neurons')
 % plot(plotbins(1:end-1),nanmean(plotbinnedC2(:,:,clust5_neurons), [1 3]))
 %%
 figure
-first =7:9;
+first =1:3;
 second=10:12;
 subplot(4,1,1)
 hold on
@@ -144,7 +141,7 @@ plot(plotbins(1:end-1),nanmean(plotbinnedC4(:,:,second,clust1_neurons), [1 3 4])
 % plot(plotbins(1:end-1),nanmean(plotbinnedC(:,:,3,clust1_neurons), [1 3 4]))
 y=ylim;
 line([0 0], [0 y(2)],'LineStyle','--','Color','r');
-rectangle('Position',[4 0 2 y(2)],'EdgeColor', 'none', 'FaceColor', [.8, .8, .8, 0.5])
+rectangle('Position',[2 0 2 y(2)],'EdgeColor', 'none', 'FaceColor', [.8, .8, .8, 0.5])
 title('Cluster 1 Population Average')
 legend('Left Error', 'Right Error','Location','Northwest')
 ylabel('Inferred Spiking (AU)')
@@ -156,28 +153,28 @@ plot(plotbins(1:end-1),nanmean(plotbinnedC4(:,:,second,clust2_neurons), [1 3 4])
 % plot(plotbins(1:end-1),nanmean(plotbinnedC(:,:,3,clust2_neurons), [1 3 4]))
 y=ylim;
 line([0 0], [0 y(2)],'LineStyle','--','Color','r');
-rectangle('Position',[4 0 2 y(2)],'EdgeColor', 'none', 'FaceColor', [.8, .8, .8, 0.5]);
+rectangle('Position',[2 0 2 y(2)],'EdgeColor', 'none', 'FaceColor', [.8, .8, .8, 0.5]);
 ylabel('Inferred Spiking (AU)')
 title('Cluster 2 Population Average')
 
 subplot(4,1,3)
 hold on
-plot(plotbins(1:end-1),nanmean(plotbinnedC4(:,:,first,clust4_neurons), [1 3 4]))
-plot(plotbins(1:end-1),nanmean(plotbinnedC4(:,:,second,clust4_neurons), [1 3 4]))
+plot(plotbins(1:end-1),nanmean(plotbinnedC4(:,:,first,clust3_neurons), [1 3 4]))
+plot(plotbins(1:end-1),nanmean(plotbinnedC4(:,:,second,clust3_neurons), [1 3 4]))
 % plot(plotbins(1:end-1),nanmean(plotbinnedC(:,:,3,clust2_neurons), [1 3 4]))
 y=ylim;
 line([0 0], [0 y(2)],'LineStyle','--','Color','r');
-rectangle('Position',[4 0 2 y(2)],'EdgeColor', 'none', 'FaceColor', [.8, .8, .8, 0.5]);
+rectangle('Position',[2 0 2 y(2)],'EdgeColor', 'none', 'FaceColor', [.8, .8, .8, 0.5]);
 ylabel('Inferred Spiking (AU)')
 title('Cluster 3 Population Average')
 
 subplot(4,1,4)
 hold on
-plot(plotbins(1:end-1),nanmean(plotbinnedC4(:,:,first,clust5_neurons), [1 3 4]))
-plot(plotbins(1:end-1),nanmean(plotbinnedC4(:,:,second,clust5_neurons), [1 3 4]))
+plot(plotbins(1:end-1),nanmean(plotbinnedC4(:,:,first,clust4_neurons), [1 3 4]))
+plot(plotbins(1:end-1),nanmean(plotbinnedC4(:,:,second,clust4_neurons), [1 3 4]))
 % plot(plotbins(1:end-1),nanmean(plotbinnedC(:,:,3,clust3_neurons), [1 3 4]))
 y=ylim;
-rectangle('Position',[4 0 2 y(2)],'EdgeColor', 'none', 'FaceColor', [.8, .8, .8, 0.5]);
+rectangle('Position',[2 0 2 y(2)],'EdgeColor', 'none', 'FaceColor', [.8, .8, .8, 0.5]);
 line([0 0], [0 y(2)],'LineStyle','--','Color','r');
 ylabel('Inferred Spiking (AU)')
 title('Cluster 4 Population Average')

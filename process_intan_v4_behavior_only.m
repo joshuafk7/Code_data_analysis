@@ -10,7 +10,7 @@
     %things individually if you want
 function [tastes,unit, data,trial, summary] = process_intan_v4_behavior_only(filename,excel_tastes,excel_directions)
 % filename = 'D:\Behavior\Discrimination\JK062\190914\JK062_190914_161300.rhd';
-file = dir('*.rhd');
+file = filename;
 dataRaw = read_Intan(file.name);
 % data = read_intan_batch;
 %% extract the event data
@@ -50,8 +50,9 @@ end
 [data.R_1(1,:), data.R_1(2,:)]            = Timing_onset_offset(dataRaw.event(8,:), dataRaw.ts, 0.5,30,0);
 
 [data.L_1(1,:), data.L_1(2,:)]            = Timing_onset_offset(dataRaw.event(9,:), dataRaw.ts, 0.5,30,0);   
+if ~isempty(find(dataRaw.event(14,:)))
 [data.imaging_frames(1,:), data.imaging_frames(2,:)]            = Timing_onset_offset(dataRaw.event(14,:), dataRaw.ts, 0.5,30,0);   
-
+end
 %% remove NI errors
 names = fieldnames(data);
 for i = 1:length(names)
@@ -146,7 +147,7 @@ for i = 1:length(data.firstLick)
         end
         for b = 1:length(tastes)
             trial(idx).Beh_Frame_index = unit.beh_frames.spikeraster(i).index; %extrac frame index for alignment with imaging
-            if unit.imaging_frames.Spike~=0
+            if exist('unit.imaging_frames')~=0
                 trial(idx).Imaging_Frame_index = unit.imaging_frames.spikeraster(i).index; %extrac frame index for alignment with imaging
             end
         end
