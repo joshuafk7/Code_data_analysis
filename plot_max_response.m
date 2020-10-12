@@ -9,11 +9,13 @@ sz = round(sqrt(length(sig_neurons)))+1; %pick number of subplots
 
 for j=1:length(sig_neurons)
     subplot(sz,sz-1,j)
-    for i=1:6
+    for i=1:length(t)
         hold on
         bar1 = bar(t(i), temp1(i,j));
 %         errorbar(t(i),temp1(i,j),temp2(i,j));
         title(append('Neuron ',num2str(sig_neurons(j))));
+        ylabel('Inferred Spiking')
+%         xlabel('Taste')
     end
     hold off
    

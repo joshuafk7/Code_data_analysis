@@ -1,0 +1,137 @@
+%% clustering for neurons from 2way anova comparison
+Q = squeeze(nanmean(binnedC6(:,3,:,taste_resp_neurons),1));
+Q=zscore(Q);
+QQ = linkage(Q','ward');
+cutoff = median([QQ(end-5,3) QQ(end-4,3)]);
+QQQ = cluster(QQ, 'Cutoff', cutoff, 'Depth',5,'Criterion','distance');
+% QQQ = cluster(QQ, 'MaxClust', 8);
+numclusters = length(unique(QQQ));
+clust_neurons = NaN(length(taste_resp_neurons),numclusters);
+for i=1:numclusters
+    temp1 = taste_resp_neurons(find(QQQ == i));
+    temp2=length(taste_resp_neurons)-length(temp1);
+    temp3 = [temp1; NaN(temp2,1)];
+   clust_neurons(:,i) =  temp3;
+end
+
+% % neuron_number = 1:length(neurons);
+% clust1_neurons = taste_resp_2wayANOVA(find(QQQ == 1));
+% clust2_neurons = taste_resp_2wayANOVA(find(QQQ == 2));
+% clust3_neurons = taste_resp_2wayANOVA(find(QQQ == 3));
+% clust4_neurons = taste_resp_2wayANOVA(find(QQQ == 4));
+figure(716)
+D=pdist(Q');
+leaforder=optimalleaforder(QQ,D);
+temp1=taste_resp_neurons;
+for i=1:length(temp1)
+    clustorder(i) = temp1(leaforder(i));
+end
+colors=rand(numclusters,3);
+subplot(10,1,[1 2 3 4])
+h=dendrogram(QQ,0,'ColorThreshold',cutoff,'Labels',num2str(taste_resp_neurons),'Reorder',leaforder);
+% for i=1:length(h)
+%     h(i).Color = colors(clustupdate(i),:);
+%    
+% end
+% h(2).Color
+set(gca,'fontsize',6)
+title('Hierarchical Clustering - Taste Selective Neurons')
+clustplot1 = zscore(squeeze(nanmean(binnedC6(:,3,:,clustorder,1))));
+p=5;
+j=2;
+i=1;
+c=categorical(clustorder, clustorder);
+% for j=1:6
+%     subplot(10,1,p)
+%     hold on
+
+p=5;
+
+
+for j=1:6
+subplot(10,1,p)
+    ylabel(t(j))
+    
+    set(get(gca,'YLabel'),'Rotation',0)
+    set(gca,'xtick',[])
+    set(gca,'ytick',[])
+    if j==6
+       xlabel('Neurons') 
+    end
+for i=1:size(clustorder,2)
+    hold on
+%    if intersect(clustorder(i), clust_neurons(:,i)) ~=0
+     
+%       hold on
+[~,y1] = find(clustorder(i)==clust_neurons);
+    clustupdate(i)=y1;
+    bar1= bar(c(i),clustplot1(j,i),'FaceColor',[colors(clustupdate(i),:)]);
+%    end
+%    if intersect(clustorder(i), clust2_neurons) ~=0
+%         hold on 
+%        bar1=bar(c(i),clustplot1(j,i),'g');
+%        clustupdate(i)=2;
+% %     ylabel(t(i))
+% %     set(get(gca,'YLabel'),'Rotation',0);
+% %    
+% %     set(gca,'xtick',[])
+% %     set(gca,'ytick',[])
+%    end
+%    if intersect(clustorder(i), clust3_neurons) ~=0
+%         hold on 
+%        bar1=bar(c(i),clustplot1(j,i),'c');
+%        clustupdate(i)=3;
+% %     ylabel(t(i))
+% %     set(get(gca,'YLabel'),'Rotation',0)
+% %     
+% %     set(gca,'xtick',[])
+% %     set(gca,'ytick',[])
+%    end
+%    if intersect(clustorder(i), clust4_neurons) ~=0
+%         hold on
+%        bar1=bar(c(i),clustplot1(j,i),'r');
+%        clustupdate(i)=4;
+% %     ylabel(t(i))
+% %     set(get(gca,'YLabel'),'Rotation',0)
+% %    
+% %     set(gca,'xtick',[])
+% %     set(gca,'ytick',[]) 
+%    end
+end
+p=p+1;
+end
+
+
+
+set(gcf, 'Renderer', 'painters');
+%%
+clusters = unique(clustupdate,'stable');
+clustupdate=clustupdate';
+updated_clusters=NaN(length(taste_resp_neurons),numclusters);
+
+for i=1:numclusters
+     temp1=clustorder(find(clustupdate==clusters(i)));
+     temp2=length(taste_resp_neurons)-length(temp1);
+     temp3 = [temp1'; NaN(temp2,1)];
+    updated_clusters(:,i) = temp3;
+end
+for i=1:numclusters
+     temp1=clustorder(find(clustupdate==clusters(i)));
+    updated_clusters1{1,i} = temp1;
+end
+for i=1:numclusters
+    temp1 = updated_clusters1{1,i};
+    clustmean(:,i)=mean(zscore(squeeze(nanmean(binnedC6(:,3,:,temp1,1)))),2);
+    temp1=[];
+end
+x=[100 75 55 45 25 0];
+figure(667)
+for i=1:numclusters
+    subplot(3,3,i)
+    scatter(x(1,:),clustmean(:,i)',40,colors(clusters(i),:),'filled')
+    title(append('Cluster',num2str(i)))
+    xlabel('Sucrose Concentration')
+    ylabel('Spiking Z score')
+end
+set(gcf, 'Renderer', 'painters');
+%%

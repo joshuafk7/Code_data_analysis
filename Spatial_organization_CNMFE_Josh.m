@@ -15,7 +15,7 @@ for i=1:length(A(1,1,:))
     center(i,3) = i;
     ai=[];
 end
-Coor = neuron_new.show_contours(0.8); 
+Coor = neuron.show_contours(0.8); 
 hold on
 scatter(center(:,1), center(:,2),'filled');
  text(center(:,1)+.5, center(:,2)+.5, num2str(center(:,3)),'fontsize',9);

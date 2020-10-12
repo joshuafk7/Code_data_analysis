@@ -1,7 +1,10 @@
-q=zeros(1,size(neuron.C,1));
+% q=zeros(1,size(neuron.C,1));
+p=1;
+q=[];
 for i = 1:length(neuron.C_raw(:,1)) %find all with C_raw values less than 1 and remove
-    if max(neuron.C_raw(i,:)) < 2.5
-    q(i) = 1;
+    if max(neuron.C_raw(i,:)) < 1
+    q(p) = i;
+    p=p+1;
     end
 end
 length(find(q))
@@ -12,16 +15,19 @@ e = intersect(c,d);
 
 %%
 i=1;
-for i =1 :length(neuron.C_raw(:,1))
+for i =1 :length(neuron_new.C_raw(:,1))
     AA=[];
-    AA = find(full(neuron.S(i,:)) == 0);
-    CC = find(full(neuron.S(i,:)) ~= 0);
-    Bb(1,i) = var(neuron.C_raw(i,AA));
-    Bb(2,i) = var(neuron.C_raw(i,CC));
+    AA = find(full(neuron_new.S(i,:)) == 0);
+    CC = find(full(neuron_new.S(i,:)) ~= 0);
+    Bb(1,i) = range(neuron_new.C_raw(i,AA));
+    Bb(2,i) = range(neuron_new.C_raw(i,CC));
+    EE(i)=length(AA);
+    FF(i)=length(CC);
 end
-Bb(3,:)= Bb(2,:)-Bb(1,:);
+JJ = find(FF<50);
+Bb(3,:)= Bb(1,:)-Bb(2,:);
 histogram(Bb(3,:))
-Z = find(Bb(3,:)>.1);
+Z = find(Bb(3,:)>1);
 %%
 fakeneuron = find(q);
 neuron_temp = neuron;
@@ -37,11 +43,11 @@ for i =1:length(neuron.C_raw(:,1)) %calculate correlation between C and C_raw
 R=corrcoef(neuron.C(i,:), neuron.C_raw(i,:));
 cor(i) = R(2,1);
 end
-%%
 r=[];
-r = find(cor<.8); %find cells with correlation greater than .9
+r = find(cor<.6); %find cells with correlation greater than .9
+% p = find(cor>.8);
 %%
-neuron2plot = 335;
+neuron2plot = 543;
 plot(neuron.C_raw(neuron2plot,:))%,'color','g')
 hold on
 plot(neuron.C(neuron2plot,:))

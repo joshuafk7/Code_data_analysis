@@ -13,7 +13,7 @@ for i = 1:size(neuron_temp.C,1)
     if isempty(event(i).lickCount)
         fakeneuron(k) = i;
         k = k+1;
-    elseif length(event(i).lickCount)<3
+    elseif length(event(i).lickCount)<10
         fakeneuron(k) = i;
         k = k+1;
         

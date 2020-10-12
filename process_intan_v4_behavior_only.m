@@ -8,9 +8,8 @@
 %output
     %all other outputs are saved in the summary variable but you can also output
     %things individually if you want
-function [tastes,unit, data,trial, summary] = process_intan_v4_behavior_only(filename,excel_tastes,excel_directions)
-% filename = 'D:\Behavior\Discrimination\JK062\190914\JK062_190914_161300.rhd';
-file = filename;
+function [tastes,unit, data,trial, summary] = process_intan_v4_behavior_only(file,excel_tastes,excel_directions)
+% file = dir('RVKC441_191001_112219.rhd');
 dataRaw = read_Intan(file.name);
 % data = read_intan_batch;
 %% extract the event data
@@ -46,13 +45,17 @@ for i = 1:7
         Timing_onset_offset(dataRaw.event(i,:), dataRaw.ts, 0.5,30,0);
     end
 end
-
+data.T_4 = [];
+data = rmfield(data, 'T_4'); %remove rinses
 [data.R_1(1,:), data.R_1(2,:)]            = Timing_onset_offset(dataRaw.event(8,:), dataRaw.ts, 0.5,30,0);
 
 [data.L_1(1,:), data.L_1(2,:)]            = Timing_onset_offset(dataRaw.event(9,:), dataRaw.ts, 0.5,30,0);   
 if ~isempty(find(dataRaw.event(14,:)))
-[data.imaging_frames(1,:), data.imaging_frames(2,:)]            = Timing_onset_offset(dataRaw.event(14,:), dataRaw.ts, 0.5,30,0);   
+[data.imaging_frames_raw(1,:), data.imaging_frames_raw(2,:)]            = Timing_onset_offset(dataRaw.event(14,:), dataRaw.ts, 0.5,30,0);   
+data.imaging_frames = data.imaging_frames_raw(:,1:4:end);
 end
+
+
 %% remove NI errors
 names = fieldnames(data);
 for i = 1:length(names)
@@ -139,6 +142,11 @@ for i = 1:length(data.firstLick)
         for j = 1:length(data_signals)
             trial(idx).(data_signals{j}) = unit.(data_signals{j}).spikeraster(i).times;
             trial(idx).OverallFirstLick = data.firstLick(i);
+%             if idx ==1
+%                trial(idx).ITI = 0;
+%             else
+%                 trial(idx).ITI = data.firstLick(i)-data.Down(i-1);
+%             end
         end
         for a = 1:length(tastes)
             if ~isempty(unit.(tastes{a}).spikeraster(i).times)
@@ -146,9 +154,11 @@ for i = 1:length(data.firstLick)
             end
         end
         for b = 1:length(tastes)
-            trial(idx).Beh_Frame_index = unit.beh_frames.spikeraster(i).index; %extrac frame index for alignment with imaging
-            if exist('unit.imaging_frames')~=0
-                trial(idx).Imaging_Frame_index = unit.imaging_frames.spikeraster(i).index; %extrac frame index for alignment with imaging
+            if isfield(unit, 'beh_frames')==1
+            trial(idx).beh_frames_index = unit.beh_frames.spikeraster(i).index; %extrac frame index for alignment with imaging
+            end
+            if isfield(unit,'imaging_frames')==1
+            trial(idx).imaging_frames_index = unit.imaging_frames.spikeraster(i).index; %extrac frame index for alignment with imaging
             end
         end
         idx=idx+1;

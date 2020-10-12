@@ -2,7 +2,7 @@ function plot_compare_L_R(plotbins, plotbinnedC3, CC)
 titles = {'Correct','Error'};
 for i=1:2
     figure
-    suptitle(titles(i));
+%     suptitle(titles(i));
     ZZ = find(CC(:,2)==i);
    sz = round(sqrt(length(ZZ)))+1; %pick number of subplots
 for j=1:length(ZZ)

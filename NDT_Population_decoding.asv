@@ -1,0 +1,272 @@
+% add the path to the NDT so add_ndt_paths_and_init_rand_generator can be called
+toolbox_basedir_name = 'ndt.1.0.4/'
+addpath(toolbox_basedir_name);
+ 
+% add the NDT paths using add_ndt_paths_and_init_rand_generator
+add_ndt_paths_and_init_rand_generator
+
+load bp1021spk_04B_raster_data.mat
+
+% view the rasters from one neuron
+subplot(1, 2, 1)
+imagesc(~raster_data); colormap gray
+line([500 500], get(gca, 'YLim'), 'color', [1 0 0]);
+ylabel('Trials')
+xlabel('Time (ms)')
+title('rasters')
+ 
+% view the PSTH for one neuron
+subplot(1, 2, 2)
+bar(sum(raster_data));
+line([500 500], get(gca, 'YLim'), 'color', [1 0 0]);
+ylabel('Number of spikes')
+xlabel('Time (ms)')
+title('PSTH')
+
+raster_file_directory_name = 'Zhang_Desimone_7objects_raster_data/'
+save_prefix_name = 'Binned_Zhang_Desimone_7object_data';
+bin_width = 150;
+step_size = 50;
+ 
+create_binned_data_from_raster_data(raster_file_directory_name, save_prefix_name, bin_width, step_size);
+
+% load the binned data
+load Binned_Zhang_Desimone_7object_data_150ms_bins_50ms_sampled.mat
+ 
+for k = 1:65
+    inds_of_sites_with_at_least_k_repeats = find_sites_with_k_label_repetitions(binned_labels.stimulus_ID, k);
+    num_sites_with_k_repeats(k) = length(inds_of_sites_with_at_least_k_repeats);
+end
+
+% the name of the file that has the data in binned-format
+binned_format_file_name = 'Binned_Zhang_Desimone_7object_data_150ms_bins_50ms_sampled.mat'
+ 
+% will decode the identity of which object was shown (regardless of its position)
+specific_label_name_to_use = 'stimulus_ID';
+ 
+num_cv_splits = 20;
+ 
+ds = basic_DS(binned_format_file_name, specific_label_name_to_use, num_cv_splits)
+
+% create a feature preprocessor that z-score normalizes each neuron
+ 
+% note that the FP objects are stored in a cell array 
+% which allows multiple FP objects to be used in one analysis
+ 
+the_feature_preprocessors{1} = zscore_normalize_FP;
+
+% create the CL object
+the_classifier = max_correlation_coefficient_CL;
+
+% create the CV object
+the_cross_validator = standard_resample_CV(ds, the_classifier, the_feature_preprocessors);
+ 
+% set how many times the outer 'resample' loop is run
+% generally we use more than 2 resample runs which will give more accurate results
+% but to save time in this tutorial we are using a small number.
+ 
+the_cross_validator.num_resample_runs = 2;
+
+
+DECODING_RESULTS = the_cross_validator.run_cv_decoding;
+ 
+save_file_name = 'Zhang_Desimone_basic_7object_results'
+ 
+save(save_file_name, 'DECODING_RESULTS');
+
+result_names{1} = save_file_name;  
+ 
+% create the plot results object
+plot_obj = plot_standard_results_object(result_names);
+ 
+% put a line at the time when the stimulus was shown
+plot_obj.significant_event_times = 0;
+ 
+% display the results
+plot_obj.plot_results;
+
+% create the plot results object
+% note that this object takes a string in its constructor not a cell array
+plot_obj = plot_standard_results_TCT_object(save_file_name);
+
+% put a line at the time when the stimulus was shown
+plot_obj.significant_event_times = 0;
+
+% display the results
+plot_obj.plot_results;
+
+%% generalization tutorial
+
+% change the line below to the directory where your raster format data .mat files are stored
+raster_file_directory_name = 'Zhang_Desimone_7objects_raster_data/' 
+save_prefix_name = 'Binned_Zhang_Desimone_7objects_data';
+ 
+bin_width = 400;
+step_size = 400;
+start_time = 601;
+end_time = 1000;
+ 
+create_binned_data_from_raster_data(raster_file_directory_name, save_prefix_name, bin_width, step_size, start_time, end_time);
+
+the_classifier = max_correlation_coefficient_CL;
+the_feature_preprocessors{1} = zscore_normalize_FP;
+
+
+id_string_names = tastes;
+ the_training_label_names = tastes([1 1 1 6 6 6]) ;
+ the_test_label_names = tastes;
+% for iID = 1:7   
+%    the_training_label_names{iID} = {[id_string_names{iID} '_upper']};
+%    the_test_label_names{iID} = {[id_string_names{iID} '_lower']};
+% end
+
+num_cv_splits = 10;
+ 
+binned_data_file_name = 'test_decoder.mat';
+specific_labels_names_to_use = 'tastes';  % use the combined ID and position labels
+ 
+ds = generalization_DS(binned_data_file_name, specific_labels_names_to_use, num_cv_splits, the_training_label_names, the_test_label_names);
+
+the_cross_validator = standard_resample_CV(ds, the_classifier, the_feature_preprocessors);
+the_cross_validator.num_resample_runs = 10;
+DECODING_RESULTS = the_cross_validator.run_cv_decoding;
+
+mkdir position_invariance_results;  % make a directory to save all the results
+num_cv_splits = 18;
+ 
+id_string_names = {'car', 'couch', 'face', 'kiwi', 'flower', 'guitar', 'hand'};
+pos_string_names = {'upper', 'middle', 'lower'};
+ 
+for iTrainPosition = 1:3
+   for iTestPosition = 1:3
+ 
+      for iID = 1:7
+            the_training_label_names{iID} = {[id_string_names{iID} '_' pos_string_names{iTrainPosition}]};
+            the_test_label_names{iID} =  {[id_string_names{iID} '_' pos_string_names{iTestPosition}]};
+      end
+ 
+      ds = generalization_DS(binned_data_file_name, specific_labels_names_to_use, num_cv_splits, the_training_label_names, the_test_label_names);
+       
+      the_cross_validator = standard_resample_CV(ds, the_classifier, the_feature_preprocessors);
+      the_cross_validator.num_resample_runs = 10;
+      DECODING_RESULTS = the_cross_validator.run_cv_decoding;
+ 
+      save_file_name = ['position_invariance_results/Zhang_Desimone_pos_inv_results_train_pos' num2str(iTrainPosition) '_test_pos' num2str(iTestPosition)]
+ 
+      save(save_file_name, 'DECODING_RESULTS')
+ 
+   end
+end
+
+position_names = {'Upper', 'Middle', 'Lower'}
+ 
+for iTrainPosition = 1:3
+   
+   for iTestPosition = 1:3
+       load(['position_invariance_results/Zhang_Desimone_pos_inv_results_train_pos' num2str(iTrainPosition) '_test_pos' num2str(iTestPosition)]);
+ 
+        all_results(iTrainPosition, iTestPosition) = DECODING_RESULTS.ZERO_ONE_LOSS_RESULTS.mean_decoding_results;
+   end
+ 
+   subplot(1, 3, iTrainPosition)
+   bar(all_results(iTrainPosition, :) .* 100);
+ 
+   title(['Train ' position_names{iTrainPosition}])
+   ylabel('Classification Accuracy');
+   set(gca, 'XTickLabel', position_names);
+   xlabel('Test position')
+   xLims = get(gca, 'XLim')
+   line([xLims], [1/7 1/7], 'color', [0 0 0]);  % put line at chance decoding accuracy
+ 
+end
+ 
+set(gcf, 'position', [250 300 950 300])  % expand the figure
+
+%%
+% binned_data_decoding=[];
+% num_neurons = length(taste_resp_neurons);
+% for i=1:num_neurons
+%     binned_data_decoding{1,i} = squeeze(plotbinnedC2(:,:,taste_resp_neurons(i)));
+% end
+% binned_data = [];
+% binned_data=binned_data_decoding;
+x=[100 75 55 45 25 0];
+for i=1:length(trial)
+    for j=1:length(tastes)
+     if ~isempty(find(convertCharsToStrings(trial(i).TasteID)==tastes(j)))
+         trial_labels2(1,i)=x(j);
+     end
+    end
+end
+
+
+suc_trials = find(trial_labels2 == 100  );
+suc_trials(2,:) = 100;
+nacl_trials = find(trial_labels2 ==  0 );
+nacl_trials(2,:) = 0;
+
+temp =([suc_trials nacl_trials]);
+[temp1, order] = sort(temp(1,:));
+pure_taste = temp(:,order);
+
+binned_data=[];
+neurons2decode = taste_resp_2wayANOVA;
+num_neurons = length(neurons2decode);
+for i=1:num_neurons
+    binned_data{1,i} = squeeze(plotbinnedC2(pure_taste(1,:),:,neurons2decode(i)));
+end
+binned_labels = [];
+for i=1:length(pure_taste(2,:))
+    if pure_taste(2,i) == 100
+       temp777(1,i) = tastes(1) ;
+    end
+     if pure_taste(2,i) == 0
+       temp777(1,i) = tastes(6) ;
+    end
+ 
+end
+
+for i=1:num_neurons
+    binned_labels.tastes{1,i}=temp777;
+end
+% 
+
+% binned_labels.tastes = binned_labels1
+binned_site_info = [];
+save('test_decoder.mat','binned_labels','binned_data','binned_site_info')
+%%
+toolbox_basedir_name = 'ndt.1.0.0/'
+addpath(toolbox_basedir_name);
+add_ndt_paths_and_init_rand_generator
+ 
+% the name of your binned-format data
+binned_data_file_name = 'test_decoder.mat'
+ 
+% select labels to decode 
+specific_label_name = 'tastes';
+ 
+% choose the number of cross-validation section as determined above
+num_cv_splits = 20;  
+ 
+% create a basic datasource
+ds = basic_DS(binned_data_file_name, specific_label_name, num_cv_splits)
+ 
+% create a feature proprocessor and a classifier
+the_feature_preprocessors{1} = zscore_normalize_FP;
+the_classifier = max_correlation_coefficient_CL;
+ 
+% create a cross-validation object
+the_cross_validator = standard_resample_CV(ds, the_classifier, the_feature_preprocessors);
+ 
+% run the decoding analysis
+DECODING_RESULTS = the_cross_validator.run_cv_decoding;
+ 
+% save the datasource parameters for our records
+DATASOURCE_PARAMS = ds.get_DS_properties;
+ 
+% save the decoding results as 'My_Decoding_Results
+save('My_Decoding_Results', 'DECODING_RESULTS', 'DATASOURCE_PARAMS');
+ 
+% plot the results
+plot_obj = plot_standard_results_object({'My_Decoding_Results.mat'});
+plot_obj.plot_results;

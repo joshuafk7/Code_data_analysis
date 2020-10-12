@@ -35,7 +35,7 @@ for j =1:length(b.Date)
     cd(c);
     k=1;
     p=1;
-    pattern = ["S","N"]; %tastes in excel file must start with S or N
+    pattern = ["S","N","M","Q"]; %tastes in excel file must start with S or N
     for i =1:7
         if startsWith((b.(append('Line_',num2str(i)))(j)),pattern)
             excel_tastes(k) = b.(append('Line_',num2str(i)))(j); %grab tastes from excel
@@ -49,7 +49,7 @@ for j =1:length(b.Date)
     file = dir('*.rhd');
     %run behavior analysis script
 %     [total_perf]=Discrimination_performance_summary_multiple_v2(file.name,excel_tastes, excel_directions,dates,total_perf);
-        [~,~, ~,~,summary]=process_intan_v4_behavior_only(file.name,excel_tastes, excel_directions);  
+        [~,~, ~,~,summary]=process_intan_v4_behavior_only(file,excel_tastes, excel_directions);  
         total_perf = [total_perf summary];
 %     if ~isempty(summary) && ~isempty(trial) %write info to excel
 %         b.Performance(j) = summary.total_performance;

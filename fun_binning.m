@@ -63,8 +63,41 @@ switch n
                     if cell2mat(neurons(z).(tastes{p}).correct_choice(i,1)) == 1
                     r=p;
                     else
-                        r = 6+p;
+                        r = length(tastes)+p;
                     end
+                    for j=1:length(bins)-1
+                        idx= find(neurons(z).(tastes{p}).Frames{i,1} > bins(j) & neurons(z).(tastes{p}).Frames{i,1} < bins(j+1));
+                        binnedS(x,j,r,z) = sum(neurons(z).(tastes{p}).spikes{i,1}(1,idx));
+                    end
+                    x=x+1;
+                end
+            end
+        end
+    case 5
+     for z = 1:length(neurons)
+            x=1;
+            for p=1:length(tastes)
+                for i=1:length(neurons(z).(tastes{p}).spikes)
+                    
+                    r=cell2mat(neurons(z).(tastes{p}).L_R_trial);
+                    
+                    
+                    for j=1:length(bins)-1
+                        idx= find(neurons(z).(tastes{p}).Frames{i,1} > bins(j) & neurons(z).(tastes{p}).Frames{i,1} < bins(j+1));
+                        binnedS(x,j,r,z) = sum(neurons(z).(tastes{p}).spikes{i,1}(1,idx));
+                    end
+                    x=x+1;
+                end
+            end
+     end
+        case 7
+        binnedS = NaN(length(trial),length(bins)-1,2,length(neurons));
+        for z = 1:length(neurons)
+            x=1;
+            for p=1:length(tastes)
+                for i=1:length(neurons(z).(tastes{p}).spikes)
+                    r=cell2mat(neurons(z).(tastes{p}).correct_choice(i,1))+1;
+                   
                     for j=1:length(bins)-1
                         idx= find(neurons(z).(tastes{p}).Frames{i,1} > bins(j) & neurons(z).(tastes{p}).Frames{i,1} < bins(j+1));
                         binnedS(x,j,r,z) = sum(neurons(z).(tastes{p}).spikes{i,1}(1,idx));
